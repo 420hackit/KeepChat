@@ -672,37 +672,71 @@ public class KeepChat implements IXposedHookLoadPackage {
 			 */
 
 			if (resolution.isNewerThan("5.0.0")) {
-				findAndHookMethod(
-						names.get(VersionResolution.CLASS_SNAPVIEW),
-						lpparam.classLoader,
-						names.get(VersionResolution.FUNCTION_SNAPVIEW_SHOWIMAGE),
-						boolean.class, boolean.class, boolean.class,
-						new XC_MethodHook() {
-							@Override
-							protected void afterHookedMethod(
-									MethodHookParam param) throws Throwable {
-								refreshPreferences();
-								isSnapVideo = false;
-								isSnapImage = true;
+				if (resolution.isNewerThan("5.0.7")) {
+					findAndHookMethod(
+							names.get(VersionResolution.CLASS_SNAPVIEW),
+							lpparam.classLoader,
+							names.get(VersionResolution.FUNCTION_SNAPVIEW_SHOWIMAGE),
+							boolean.class, boolean.class, boolean.class, boolean.class,
+							new XC_MethodHook() {
+								@Override
+								protected void afterHookedMethod(
+										MethodHookParam param) throws Throwable {
+									refreshPreferences();
+									isSnapVideo = false;
+									isSnapImage = true;
 
-								if (((isSnap == true) && (imagesSnapSavingMode != DO_NOT_SAVE))
-										|| ((isStory == true) && (imagesStorySavingMode != DO_NOT_SAVE))) {
-									// At this point the context is put in the
-									// private
-									// member so that the dialog can be
-									// initiated from the markViewed() hook
-									context = (Context) callMethod(
-											param.thisObject, "getContext");
-									if (((isSnap == true) && (imagesSnapSavingMode == SAVE_AUTO))
-											|| ((isStory == true) && (imagesStorySavingMode == SAVE_AUTO))) {
-										runMediaScanAndToast(context);
-									} else {
-										displayDialog = true;
+									if (((isSnap == true) && (imagesSnapSavingMode != DO_NOT_SAVE))
+											|| ((isStory == true) && (imagesStorySavingMode != DO_NOT_SAVE))) {
+										// At this point the context is put in the
+										// private
+										// member so that the dialog can be
+										// initiated from the markViewed() hook
+										context = (Context) callMethod(
+												param.thisObject, "getContext");
+										if (((isSnap == true) && (imagesSnapSavingMode == SAVE_AUTO))
+												|| ((isStory == true) && (imagesStorySavingMode == SAVE_AUTO))) {
+											runMediaScanAndToast(context);
+										} else {
+											displayDialog = true;
+										}
 									}
 								}
-							}
-						});
+							});
+				}
+				else {
+					findAndHookMethod(
+							names.get(VersionResolution.CLASS_SNAPVIEW),
+							lpparam.classLoader,
+							names.get(VersionResolution.FUNCTION_SNAPVIEW_SHOWIMAGE),
+							boolean.class, boolean.class, boolean.class,
+							new XC_MethodHook() {
+								@Override
+								protected void afterHookedMethod(
+										MethodHookParam param) throws Throwable {
+									refreshPreferences();
+									isSnapVideo = false;
+									isSnapImage = true;
 
+									if (((isSnap == true) && (imagesSnapSavingMode != DO_NOT_SAVE))
+											|| ((isStory == true) && (imagesStorySavingMode != DO_NOT_SAVE))) {
+										// At this point the context is put in the
+										// private
+										// member so that the dialog can be
+										// initiated from the markViewed() hook
+										context = (Context) callMethod(
+												param.thisObject, "getContext");
+										if (((isSnap == true) && (imagesSnapSavingMode == SAVE_AUTO))
+												|| ((isStory == true) && (imagesStorySavingMode == SAVE_AUTO))) {
+											runMediaScanAndToast(context);
+										} else {
+											displayDialog = true;
+										}
+									}
+								}
+							});
+				}
+				
 				findAndHookMethod(
 						names.get(VersionResolution.CLASS_SNAPVIEW),
 						lpparam.classLoader,
